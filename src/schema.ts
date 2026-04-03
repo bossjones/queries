@@ -1,8 +1,8 @@
-import { Database } from "sqlite";
+import { Database } from 'sqlite'
 
-export async function createSchema(db: Database) {
-  // 1. Customers table
-  await db.exec(`
+export async function createSchema(db: Database, verbose: boolean) {
+    // 1. Customers table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS customers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         email TEXT UNIQUE NOT NULL,
@@ -14,10 +14,10 @@ export async function createSchema(db: Database) {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
-    `);
+    `)
 
-  // 2. Addresses table
-  await db.exec(`
+    // 2. Addresses table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS addresses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         customer_id INTEGER NOT NULL,
@@ -32,10 +32,10 @@ export async function createSchema(db: Database) {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (customer_id) REFERENCES customers(id)
     )
-    `);
+    `)
 
-  // 3. Categories table
-  await db.exec(`
+    // 3. Categories table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS categories (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE NOT NULL,
@@ -45,10 +45,10 @@ export async function createSchema(db: Database) {
         sort_order INTEGER DEFAULT 0,
         FOREIGN KEY (parent_category_id) REFERENCES categories(id)
     )
-    `);
+    `)
 
-  // 4. Products table
-  await db.exec(`
+    // 4. Products table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS products (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         sku TEXT UNIQUE NOT NULL,
@@ -63,10 +63,10 @@ export async function createSchema(db: Database) {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (category_id) REFERENCES categories(id)
     )
-    `);
+    `)
 
-  // 5. Inventory table
-  await db.exec(`
+    // 5. Inventory table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS inventory (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         product_id INTEGER NOT NULL,
@@ -79,10 +79,10 @@ export async function createSchema(db: Database) {
         FOREIGN KEY (warehouse_id) REFERENCES warehouses(id),
         UNIQUE(product_id, warehouse_id)
     )
-    `);
+    `)
 
-  // 6. Warehouses table
-  await db.exec(`
+    // 6. Warehouses table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS warehouses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         code TEXT UNIQUE NOT NULL,
@@ -92,10 +92,10 @@ export async function createSchema(db: Database) {
         state TEXT,
         is_active BOOLEAN DEFAULT 1
     )
-    `);
+    `)
 
-  // 7. Orders table
-  await db.exec(`
+    // 7. Orders table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS orders (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         order_number TEXT UNIQUE NOT NULL,
@@ -114,10 +114,10 @@ export async function createSchema(db: Database) {
         FOREIGN KEY (shipping_address_id) REFERENCES addresses(id),
         FOREIGN KEY (billing_address_id) REFERENCES addresses(id)
     )
-    `);
+    `)
 
-  // 8. Order items table
-  await db.exec(`
+    // 8. Order items table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS order_items (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         order_id INTEGER NOT NULL,
@@ -130,10 +130,10 @@ export async function createSchema(db: Database) {
         FOREIGN KEY (order_id) REFERENCES orders(id),
         FOREIGN KEY (product_id) REFERENCES products(id)
     )
-    `);
+    `)
 
-  // 9. Reviews table
-  await db.exec(`
+    // 9. Reviews table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS reviews (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         product_id INTEGER NOT NULL,
@@ -150,10 +150,10 @@ export async function createSchema(db: Database) {
         FOREIGN KEY (order_id) REFERENCES orders(id),
         UNIQUE(product_id, customer_id, order_id)
     )
-    `);
+    `)
 
-  // 10. Customer segments table
-  await db.exec(`
+    // 10. Customer segments table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS customer_segments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         customer_id INTEGER NOT NULL,
@@ -163,10 +163,10 @@ export async function createSchema(db: Database) {
         expires_at TIMESTAMP,
         FOREIGN KEY (customer_id) REFERENCES customers(id)
     )
-    `);
+    `)
 
-  // 11. Promotions table
-  await db.exec(`
+    // 11. Promotions table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS promotions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         code TEXT UNIQUE NOT NULL,
@@ -180,10 +180,10 @@ export async function createSchema(db: Database) {
         end_date DATE NOT NULL,
         is_active BOOLEAN DEFAULT 1
     )
-    `);
+    `)
 
-  // 12. Customer activity log table
-  await db.exec(`
+    // 12. Customer activity log table
+    await db.exec(`
     CREATE TABLE IF NOT EXISTS customer_activity_log (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         customer_id INTEGER NOT NULL,
@@ -194,5 +194,5 @@ export async function createSchema(db: Database) {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (customer_id) REFERENCES customers(id)
     )
-    `);
+    `)
 }

@@ -1,15 +1,15 @@
-import { open } from "sqlite";
-import sqlite3 from "sqlite3";
+import { open } from 'sqlite'
+import sqlite3 from 'sqlite3'
 
-import { createSchema } from "./schema";
+import { createSchema } from './schema'
 
 async function main() {
-  const db = await open({
-    filename: "ecommerce.db",
-    driver: sqlite3.Database,
-  });
+    const db = await open({
+        filename: 'ecommerce.db',
+        driver: sqlite3.Database,
+    })
 
-  await createSchema(db);
+    await createSchema(db, false)
 }
 
-main();
+main()
