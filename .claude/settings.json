@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(gh pr:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git stash:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(node:*)",
+      "Bash(npm audit:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(npm test:*)",
+      "Bash(npm:*)",
+      "Bash(npx vitest:*)",
+      "Bash(python:*)",
+      "Bash(uv run:*)",
+      "Edit",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright",
+      "Read",
+      "Write"
+    ]
+  },
+  "hooks": {},
+  "enabledPlugins": {
+    "langsmith-tracing@langsmith-claude-code-plugins": true
+  }
+}
