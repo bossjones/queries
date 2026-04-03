@@ -11,3 +11,7 @@ test:
 # Execute the SDK script via tsx
 sdk:
     npm run sdk
+
+# Run the TypeScript compiler without emitting files
+typecheck:
+    tsc --noEmit
