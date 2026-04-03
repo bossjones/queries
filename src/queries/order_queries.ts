@@ -1,31 +1,28 @@
-import { Database } from "sqlite";
+import { Database } from 'sqlite'
 
 interface OrderItem {
-  order_item_id: number;
-  product_id: number;
-  product_name: string;
-  quantity: number;
-  price_at_time: number;
+    order_item_id: number
+    product_id: number
+    product_name: string
+    quantity: number
+    price_at_time: number
 }
 
 interface OrderDetails {
-  order_id: number;
-  order_date: string;
-  status: string;
-  total_amount: number;
-  customer_email: string;
-  shipping_address: string;
-  shipping_city: string;
-  shipping_state: string;
-  shipping_zip: string;
-  items: OrderItem[];
+    order_id: number
+    order_date: string
+    status: string
+    total_amount: number
+    customer_email: string
+    shipping_address: string
+    shipping_city: string
+    shipping_state: string
+    shipping_zip: string
+    items: OrderItem[]
 }
 
-export async function getOrderDetails(
-  db: Database,
-  orderId: number
-): Promise<OrderDetails | null> {
-  const query = `
+export async function getOrderDetails(db: Database, orderId: number): Promise<OrderDetails | null> {
+    const query = `
     SELECT 
         o.order_id,
         o.order_date,
@@ -46,46 +43,42 @@ export async function getOrderDetails(
     JOIN order_items oi ON o.order_id = oi.order_id
     JOIN products p ON oi.product_id = p.product_id
     WHERE o.order_id = ?
-    `;
+    `
 
-  const rows: any[] = await db.all(query, [orderId]);
+    const rows: any[] = await db.all(query, [orderId])
 
-  if (!rows || rows.length === 0) {
-    return null;
-  }
+    if (!rows || rows.length === 0) {
+        return null
+    }
 
-  const order: OrderDetails = {
-    order_id: rows[0].order_id,
-    order_date: rows[0].order_date,
-    status: rows[0].status,
-    total_amount: rows[0].total_amount,
-    customer_email: rows[0].customer_email,
-    shipping_address: rows[0].shipping_address,
-    shipping_city: rows[0].shipping_city,
-    shipping_state: rows[0].shipping_state,
-    shipping_zip: rows[0].shipping_zip,
-    items: [],
-  };
+    const order: OrderDetails = {
+        order_id: rows[0].order_id,
+        order_date: rows[0].order_date,
+        status: rows[0].status,
+        total_amount: rows[0].total_amount,
+        customer_email: rows[0].customer_email,
+        shipping_address: rows[0].shipping_address,
+        shipping_city: rows[0].shipping_city,
+        shipping_state: rows[0].shipping_state,
+        shipping_zip: rows[0].shipping_zip,
+        items: [],
+    }
 
-  for (const row of rows) {
-    order.items.push({
-      order_item_id: row.order_item_id,
-      product_id: row.product_id,
-      product_name: row.product_name,
-      quantity: row.quantity,
-      price_at_time: row.price_at_time,
-    });
-  }
+    for (const row of rows) {
+        order.items.push({
+            order_item_id: row.order_item_id,
+            product_id: row.product_id,
+            product_name: row.product_name,
+            quantity: row.quantity,
+            price_at_time: row.price_at_time,
+        })
+    }
 
-  return order;
+    return order
 }
 
-export async function fetchCustomerOrders(
-  db: Database,
-  customerId: number,
-  limit: number = 10
-): Promise<any[]> {
-  const query = `
+export async function fetchCustomerOrders(db: Database, customerId: number, limit: number = 10): Promise<any[]> {
+    const query = `
     SELECT 
         o.order_id,
         o.order_date,
@@ -101,14 +94,14 @@ export async function fetchCustomerOrders(
              o.shipping_city, o.shipping_state
     ORDER BY o.order_date DESC
     LIMIT ?
-    `;
+    `
 
-  const rows = await db.all(query, [customerId, limit]);
-  return rows;
+    const rows = await db.all(query, [customerId, limit])
+    return rows
 }
 
-export async function getPendingOrders(db: Database): Promise<any[]> {
-  const query = `
+export async function getPendingOrders(db: Database, minDays: number = 0): Promise<any[]> {
+    const query = `
     SELECT 
         o.order_id,
         o.order_date,
@@ -120,17 +113,14 @@ export async function getPendingOrders(db: Database): Promise<any[]> {
     JOIN customers c ON o.customer_id = c.customer_id
     WHERE o.status = 'pending'
     ORDER BY o.order_date
-    `;
+    `
 
-  const rows = await db.all(query, []);
-  return rows;
+    const rows = await db.all(query, [])
+    return rows
 }
 
-export async function findOrdersByStatus(
-  db: Database,
-  status: string
-): Promise<any[]> {
-  const query = `
+export async function findOrdersByStatus(db: Database, status: string): Promise<any[]> {
+    const query = `
     SELECT DISTINCT
         o.order_id,
         o.order_date,
@@ -147,17 +137,14 @@ export async function findOrdersByStatus(
     WHERE o.status = ?
     GROUP BY o.order_id, o.order_date, o.total_amount, c.email
     ORDER BY o.order_date DESC
-    `;
+    `
 
-  const rows = await db.all(query, [status]);
-  return rows;
+    const rows = await db.all(query, [status])
+    return rows
 }
 
-export async function getRecentOrders(
-  db: Database,
-  days: number = 7
-): Promise<any[]> {
-  const query = `
+export async function getRecentOrders(db: Database, days: number = 7): Promise<any[]> {
+    const query = `
     SELECT DISTINCT
         o.order_id,
         o.order_date,
@@ -179,18 +166,14 @@ export async function getRecentOrders(
     WHERE o.order_date >= date('now', '-' || ? || ' days')
     GROUP BY o.order_id, o.order_date, o.total_amount, o.shipping_amount, c.segment
     ORDER BY o.order_date DESC
-    `;
+    `
 
-  const rows = await db.all(query, [days]);
-  return rows;
+    const rows = await db.all(query, [days])
+    return rows
 }
 
-export async function fetchOrdersByDateRange(
-  db: Database,
-  startDate: string,
-  endDate: string
-): Promise<any[]> {
-  const query = `
+export async function fetchOrdersByDateRange(db: Database, startDate: string, endDate: string): Promise<any[]> {
+    const query = `
     SELECT 
         o.order_id,
         o.order_date,
@@ -204,17 +187,14 @@ export async function fetchOrdersByDateRange(
     WHERE o.order_date >= ? AND o.order_date <= ?
     GROUP BY o.order_id, o.order_date, o.total_amount, c.status, o.billing_state
     ORDER BY o.order_date DESC
-    `;
+    `
 
-  const rows = await db.all(query, [startDate, endDate]);
-  return rows;
+    const rows = await db.all(query, [startDate, endDate])
+    return rows
 }
 
-export async function getHighValueOrders(
-  db: Database,
-  minAmount: number = 500
-): Promise<any[]> {
-  const query = `
+export async function getHighValueOrders(db: Database, minAmount: number = 500): Promise<any[]> {
+    const query = `
     WITH customer_ltv AS (
         SELECT 
             customer_id,
@@ -243,8 +223,8 @@ export async function getHighValueOrders(
              ltv.lifetime_value, o.shipping_address, o.shipping_city, 
              o.shipping_state, o.shipping_zip
     ORDER BY o.total_amount DESC
-    `;
+    `
 
-  const rows = await db.all(query, [minAmount]);
-  return rows;
+    const rows = await db.all(query, [minAmount])
+    return rows
 }
